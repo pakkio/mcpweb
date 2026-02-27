@@ -247,10 +247,10 @@
 <body>
   <div class="container">
     <h1>🛒 Shopping Cart</h1>
-    <p class="subtitle">WebMCP Demo — AI-controlled via MCP-B Extension</p>
+    <p class="subtitle">WebMCP Demo — AI-controlled via Claude + MCP-B Extension</p>
 
     <div class="status" id="status">
-      ⏳ Registering WebMCP tools...
+      ⏳ Initializing WebMCP tools...
     </div>
 
     <div class="products">
@@ -420,9 +420,15 @@
 
     // ==================== WEBMCP REGISTRATION ====================
     
-    // Check if WebMCP global is available
-    if (typeof navigator !== 'undefined' && navigator.modelContext) {
-      // Register all tools
+    // Aspetta che navigator.modelContext diventi disponibile
+    function registerWebMCPTools() {
+      if (typeof navigator === 'undefined' || !navigator.modelContext) {
+        // Riprova tra 500ms
+        setTimeout(registerWebMCPTools, 500);
+        return;
+      }
+
+      // Ora navigator.modelContext ESISTE! Registra i tool
       navigator.modelContext.registerTool({
         name: 'add_to_cart',
         description: 'Add a product to the shopping cart',
@@ -520,9 +526,10 @@
         'clear_cart',
         'get_cart_total'
       ]);
-    } else {
-      updateStatus('WebMCP not available - manual mode only');
     }
+
+    // Avvia la registrazione (aspetta fino a 5 secondi)
+    registerWebMCPTools();
   </script>
 </body>
 </html>
